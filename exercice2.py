@@ -43,12 +43,21 @@ def calculer_priorite(intervention):
         int: score de priorité
     """
     score = 0
+    
 
     # TODO 1 : Récupérer urgence, duree, critique avec .get()
+    urgence = intervention.get("urgence", 0)
+    duree = intervention.get("duree", 0)
+    critique = intervention.get("critique", False)
+
+    if critique:
+        valCritique = 1
+    else:
+        valCritique = 0
 
     # TODO 2 : Calculer le score selon la formule
     #          Penser à convertir critique en 1/0 
-
+    score = (urgence * 2) + (duree * 1) + (valCritique * 10)
     return score
 
 
@@ -78,9 +87,30 @@ def trier_interventions(liste_interventions):
     # TODO 1 : Créer une copie de la liste pour éviter les effets de bord
     #          Indice : interventions = liste_interventions[:]
 
+    interventions = liste_interventions[:]
+
     # TODO 2 : Implémenter un tri stable décroissant
     # Astuce stabilité :
     # - si score_i == score_j, NE PAS échanger
+
+    n = len(interventions)
+    for i in range(n):
+        # Initialize swapped to False for each pass
+        swapped = False
+        # The last i elements are already in place
+        for j in range(0, n - i - 1):
+            # Compare adjacent elements
+            if calculer_priorite(interventions[j]) == calculer_priorite(interventions[j + 1]):
+                continue
+
+            elif calculer_priorite(interventions[j]) < calculer_priorite(interventions[j + 1]):
+                # Swap if they are in the wrong order using tuple unpacking
+                interventions[j], interventions[j + 1] = interventions[j + 1],interventions[j]
+                swapped = True
+            
+        # If no two elements were swapped by inner loop, then the list is sorted
+        if not swapped:
+            break
 
     return interventions
 
@@ -110,8 +140,19 @@ def estimer_temps_interventions(liste_triee):
         'temps_moyen': 0
     }
 
+    tempsTotal = 0
+
     # TODO 1 : Calculer le temps total
+    for intervention in liste_triee:
+        tempsTotal += intervention.get("duree" * 4, 0)
     # TODO 2 : Calculer le temps moyen (0 si liste vide)
+    if len(liste_triee) == 0:
+        tempsMoyen = 0
+    else:
+        tempsMoyen = tempsTotal / len(liste_triee)
+
+    temps_stats["temps_total"] = tempsTotal
+    temps_stats["temps_moyen"] = tempsMoyen 
 
     return temps_stats
 
