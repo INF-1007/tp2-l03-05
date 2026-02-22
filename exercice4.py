@@ -205,11 +205,12 @@ def trouver_meilleur_equipement(salle, taille_equipe):
         for j in range(len(salle[i])):
             case = salle[i][j]
             if case == 'D2' or case == 'D4':
-                capacite = int(case[1])  # Extraire le chiffre de la capacité 
+                capacite = int(case[1]) #Sachant que case contien D2 ou D4 
                 score = calculer_score_equipement((i, j), capacite, taille_equipe, len(salle[0]))
                 if score > 0:  
-                    if meilleur is None or score > meilleur[2]:  # meilleur[2] contient le score du meilleur actuel
-                        meilleur = ((i, j), capacite, score)  # Stocker aussi le score pour comparaison future
+                    if meilleur is None or score > meilleur_score:  
+                        meilleur = ((i, j), capacite)
+                        meilleur_score = score 
 
     return meilleur
 

@@ -129,6 +129,7 @@ def calculer_cout_total(modules, interventions):
     #   - Vérifier qu’il existe dans modules
     #   - Ajouter à cout_total le cout total de maintenance du module étant donné le nombre d'interventions
     # ⚠️ Ignorer les modules absents de modules
+    cout_total = 0
     for nom_module, nombre_interventions in interventions.items():
         if nom_module in modules:
             cout_module = modules[nom_module][0]  

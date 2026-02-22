@@ -191,8 +191,24 @@ def generer_rapport_global(categories, problemes):
     rapport['nb_positifs'] = len(categories['positifs'])
     rapport['nb_neutres'] = len(categories['neutres'])
     rapport['nb_negatifs'] = len(categories['negatifs'])
-    problemes_triees = sorted(problemes.items(), key=lambda x: x[1], reverse=True)
-    rapport['top_problemes'] = [mot for mot, count in problemes_triees[:3]]
+    
+    temp_problem = problemes.copy()
+    top3  = []
+    
+    for i in range(3):
+        if not temp_problem:
+            break
+        meilleur = None
+        freq_max = -1
+        for mot in temp_problem:
+            if temp_problem[mot]>freq_max:
+                freq_max = temp_problem[mot]
+                meilleur = mot
+        if meilleur:
+            top3.append(meilleur)
+            del temp_problem[meilleur]
+            
+    rapport['top_problemes'] = top3
     return rapport
 
 
