@@ -199,7 +199,7 @@ def generer_rapport_global(categories, problemes):
         if not temp_problem:
             break
         meilleur = None
-        freq_max = -1
+        freq_max = 0
         for mot in temp_problem:
             if temp_problem[mot]>freq_max:
                 freq_max = temp_problem[mot]
