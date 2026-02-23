@@ -144,14 +144,14 @@ def estimer_temps_interventions(liste_triee):
 
     # TODO 1 : Calculer le temps total
     for intervention in liste_triee:
-        tempsTotal += intervention.get("duree" * 4, 0)
+        tempsTotal += intervention.get("duree", 0) * 4
     # TODO 2 : Calculer le temps moyen (0 si liste vide)
     if len(liste_triee) == 0:
         tempsMoyen = 0
     else:
         tempsMoyen = tempsTotal / len(liste_triee)
 
-    temps_stats["temps_total"] = tempsTotal
+    temps_stats["temps_total"] = int(tempsTotal)
     temps_stats["temps_moyen"] = tempsMoyen 
 
     return temps_stats
@@ -183,6 +183,10 @@ def identifier_interventions_urgentes(liste, seuil=30):
     #   - si urgence > seuil, ajouter l'id.
     # ⚠️ Si 'id' manquant, tu peux ignorer l'intervention ou ajouter None
     # (au choix, mais rester cohérent)
+
+    for intervention in liste:
+        if intervention["id"] is not None and intervention.get("urgence", 0) > seuil:
+            urgentes.append(intervention["id"])
 
     return urgentes
 

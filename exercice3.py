@@ -59,6 +59,11 @@ def verifier_ressources(ressources, besoin):
     #         peut_faire = False
     #         mettre à jour la liste "manquantes"
 
+    for cle in ressources.keys() and besoin.keys():
+        if ressources.get(cle, 0) < besoin.get(cle, 0):
+            peut_faire = False
+            manquantes.append(cle)
+
     return peut_faire, manquantes
 
 
@@ -88,6 +93,10 @@ def mettre_a_jour_ressources(ressources, besoin, cycles=1):
     #   - calculer la consommation
     #   - mettre à jour le dictionnaire "nouvelles"
     # (On suppose que les données fournies sont cohérentes; pas besoin de borner à 0)
+
+    for cle in nouvelles.keys() and besoin.keys():
+        consommationBesoin = besoin.get(cle) * cycles
+        nouvelles[cle] -= consommationBesoin
 
     return nouvelles
 
@@ -123,6 +132,11 @@ def generer_alertes_ressources(ressources, seuil=50):
     #         calculer a_commander
     #         mettre à jour alertes
 
+    for stock in ressources:
+        if ressources[stock] < seuil:
+            qteCommande = niveau_cible - ressources[stock]
+            alertes[stock] = (ressources[stock], qteCommande)
+
     return alertes
 
 
@@ -146,6 +160,7 @@ def calculer_cycles_possibles(ressources, consommations):
         dict: {activite: nb_cycles_possibles}
     """
     possibles = {}
+    listeCycle = []
 
     # TODO :
     # Pour chaque activité :
@@ -155,6 +170,19 @@ def calculer_cycles_possibles(ressources, consommations):
     #   - une ressource est considérée valide si conso > 0
     #   - si aucune ressource valide (toutes conso==0), décider nb_cycles=0 
     #   - mettre à jour "possibles"
+
+    for categorie, activite in consommations.items():
+        listeCycle.clear()
+
+        for ressource, quantite in activite.items():
+            if quantite > 0:
+                nbCyclesPossible = ressources[ressource] // quantite
+                listeCycle.append(nbCyclesPossible)
+
+        if(len(listeCycle) == 0):
+            possibles[categorie] = 0
+        else:
+            possibles[categorie] = min(listeCycle)    
 
     return possibles
 
@@ -188,13 +216,37 @@ Returns:
     dict: {ressource: quantite_a_acheter}
     """
     achats = {}
+    manques = {}
 
     # TODO 1 : Calculer les manques dans un dict manques = {}
+    for ressource in ressources.keys() and besoins_prevus.keys():
+        if ressources.get(ressource, 0) < besoins_prevus.get(ressource, 0):
+            qteManquante = besoins_prevus.get(ressource, 0) - ressources.get(ressource, 0)
+            manques[ressource] = qteManquante
+        
     # TODO 2 : Trier les manques par ordre décroissant (utiliser la fonction sorted())
+    manquesTrie = dict(sorted(manques.items(), key=lambda item: item[1], reverse=True))
+
     # TODO 3 : Parcourir les ressources par priorité :
     #          - calculer la quantite max achetable
     #          - acheter la quantite requise et soustraire du budget
 
+    # COUTS_UNITAIRES
+    for ressourceManquante in manquesTrie:
+        qteAchat = 0
+
+        if budget - (manquesTrie[ressourceManquante] * COUTS_UNITAIRES[ressourceManquante]) > 0:
+            budget -= manquesTrie[ressourceManquante] * COUTS_UNITAIRES[ressourceManquante]
+            qteAchat = manquesTrie[ressourceManquante]
+        else:
+            while(budget > 0 and qteAchat <= manquesTrie[ressourceManquante]):
+                budget -= COUTS_UNITAIRES[ressourceManquante]
+                qteAchat += 1
+
+        if qteAchat > 0:        
+            achats[ressourceManquante] = qteAchat
+                
+    
     return achats
 
 

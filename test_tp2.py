@@ -540,10 +540,10 @@ def main():
     print("=== TP2 — Tests étudiants ===\n")
 
     tests_ex1()
-    # tests_ex2()
-    # tests_ex3()
-    # tests_ex4()
-    # tests_ex5()
+    tests_ex2()
+    tests_ex3()
+    tests_ex4()
+    tests_ex5()
 
     total = PASSES + len(FAILURES)
     print("\n" + "=" * 60)
